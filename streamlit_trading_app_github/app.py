@@ -10,23 +10,15 @@ from oandapyV20.endpoints.instruments import InstrumentsCandles
 import matplotlib.pyplot as plt
 
 
-# --- OANDA API Setup ---
+# --- Load OANDA credentials from Streamlit secrets ---
+@st.cache_resource
 def load_oanda_config():
-    """Loads OANDA API configuration from oanda.cfg."""
-    config = ConfigParser()
     try:
-        config.read('oanda.cfg')
-        account_id = config['oanda']['account_id']
-        access_token = config['oanda']['api_key']
+        account_id = st.secrets["oanda"]["account_id"]
+        access_token = st.secrets["oanda"]["api_key"]
         return account_id, access_token
-    except FileNotFoundError:
-        st.error("Error: oanda.cfg not found. Please create the configuration file with your OANDA API credentials.")
-        return None, None
-    except KeyError:
-        st.error("Error: 'account_id' or 'api_key' not found in oanda.cfg. Please check the configuration file.")
-        return None, None
     except Exception as e:
-        st.error(f"An unexpected error occurred while loading OANDA config: {e}")
+        st.error("Missing credentials in secrets.toml.")
         return None, None
 
 account_id, access_token = load_oanda_config()
